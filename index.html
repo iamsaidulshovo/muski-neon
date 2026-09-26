@@ -1,0 +1,453 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root {
+    --bg-main: #090d16;
+    --card-bg: #101622;
+    --card-border: #1e293b;
+    --accent-cyan: #06b6d4;
+    --accent-blue: #3b82f6;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+  }
+
+  .muski-funnel-wrap {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    line-height: 1.5;
+  }
+  .muski-funnel-wrap *, .muski-funnel-wrap *::before, .muski-funnel-wrap *::after { box-sizing: border-box; }
+  .muski-funnel-wrap img { max-width: 100%; height: auto; display: block; border-radius: 12px; }
+  .m-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; width: 100%; }
+
+  .funnel-step { display: none; }
+  .funnel-step.active-step { display: block; }
+
+  /* Navbar */
+  .mf-nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid var(--card-border); }
+  .mf-logo-img { height: 35px; width: auto; max-height: 40px; object-fit: contain; display: block; background: transparent; }
+  .mf-nav-links { display: flex; gap: 25px; list-style: none; margin: 0; padding: 0; }
+  .mf-nav-links a { color: var(--text-muted); text-decoration: none; font-size: 14px; transition: 0.2s; cursor: pointer; }
+  .mf-nav-links a:hover { color: #fff; }
+  .mf-btn { background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); color: #fff !important; padding: 10px 24px; border-radius: 50px; font-weight: 700; font-size: 14px; text-decoration: none; border: none; cursor: pointer; display: inline-block; box-shadow: 0 10px 25px rgba(6, 182, 212, 0.3); transition: 0.3s; }
+  .mf-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+  /* Hero Section */
+  .mf-hero { padding: 60px 0; display: grid; grid-template-columns: 1fr; gap: 40px; align-items: center; }
+  @media(min-width: 968px) { .mf-hero { grid-template-columns: 1.1fr 0.9fr; } }
+  .mf-badge { background: rgba(6, 182, 212, 0.1); color: var(--accent-cyan); padding: 6px 14px; border-radius: 30px; font-size: 12px; font-weight: 700; text-transform: uppercase; display: inline-block; border: 1px solid rgba(6, 182, 212, 0.2); margin-bottom: 20px; }
+  .mf-hero h1 { font-size: clamp(32px, 5vw, 52px); font-weight: 900; line-height: 1.1; margin-bottom: 15px; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .mf-hero p { color: var(--text-muted); font-size: 16px; margin-bottom: 25px; }
+  .mf-rating { display: flex; align-items: center; gap: 8px; color: #f59e0b; font-size: 14px; margin-bottom: 20px; }
+  .mf-price-box { display: flex; align-items: baseline; gap: 15px; margin-bottom: 25px; }
+  .mf-curr-price { font-size: 32px; font-weight: 900; color: #fff; }
+  .mf-orig-price { font-size: 18px; color: var(--text-muted); text-decoration: line-through; }
+
+  /* Sections & Grids */
+  .mf-sec-title { text-align: center; margin: 60px 0 40px; }
+  .mf-sec-title h2 { font-size: 28px; font-weight: 800; margin-bottom: 10px; color: #fff; }
+  .mf-sec-title p { color: var(--text-muted); font-size: 15px; }
+
+  .mf-features { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 60px; }
+  .mf-card { background: var(--card-bg); border: 1px solid var(--card-border); padding: 25px; border-radius: 16px; }
+  .mf-card i { font-size: 24px; color: var(--accent-cyan); margin-bottom: 15px; background: rgba(6, 182, 212, 0.1); padding: 12px; border-radius: 10px; display: inline-block; }
+  .mf-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: #fff; }
+  .mf-card p { font-size: 14px; color: var(--text-muted); margin: 0; }
+
+  .mf-showcase { display: grid; grid-template-columns: 1fr; gap: 30px; align-items: center; margin-bottom: 30px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 30px; }
+  @media(min-width: 768px) { .mf-showcase { grid-template-columns: 1fr 1fr; } }
+
+  .mf-box-grid { display: grid; grid-template-columns: 1.2fr 1.8fr; gap: 30px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 30px; align-items: center; margin-bottom: 60px; }
+  @media(max-width: 768px) { .mf-box-grid { grid-template-columns: 1fr; } }
+  .mf-box-item { background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); padding: 12px 16px; border-radius: 10px; font-size: 14px; font-weight: 600; color: #cbd5e1; display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .mf-box-item i { color: var(--accent-cyan); }
+
+  /* Reviews & FAQ */
+  .mf-reviews { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 60px; }
+  .mf-rev-card { background: var(--card-bg); border: 1px solid var(--card-border); padding: 20px; border-radius: 16px; }
+  .mf-rev-card .stars { color: #f59e0b; font-size: 12px; margin-bottom: 10px; }
+  .mf-rev-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 15px; }
+
+  .mf-faq { max-width: 800px; margin: 0 auto 60px; }
+  .mf-faq-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; margin-bottom: 12px; padding: 18px 20px; font-size: 15px; font-weight: 600; color: #fff; display: flex; justify-content: space-between; align-items: center; }
+
+  /* Checkout Step Layout */
+  .chk-grid { display: grid; grid-template-columns: 1fr; gap: 30px; margin-top: 30px; }
+  @media(min-width: 968px) { .chk-grid { grid-template-columns: 1.2fr 0.8fr; } }
+  .chk-form-group { margin-bottom: 20px; }
+  .chk-label { display: block; font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px; }
+  .chk-input, .chk-select { width: 100%; background: #090d16; border: 1px solid var(--card-border); padding: 14px 16px; border-radius: 12px; color: #fff; font-size: 14px; outline: none; }
+  .chk-pay-box { background: #090d16; border: 1px solid var(--accent-cyan); border-radius: 12px; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
+
+  /* Quantity Box Styling */
+  .chk-qty-wrap { display: inline-flex; align-items: center; background: #090d16; border: 1px solid var(--card-border); border-radius: 10px; overflow: hidden; }
+  .chk-qty-btn { background: transparent; border: none; color: #fff; padding: 10px 18px; cursor: pointer; font-size: 16px; transition: 0.2s; }
+  .chk-qty-btn:hover { background: rgba(6,182,212,0.2); }
+  .chk-qty-input { width: 50px; text-align: center; background: transparent; border: none; color: #fff; font-weight: 700; font-size: 15px; }
+
+  /* Thank You Step Layout */
+  .ty-box { text-align: center; max-width: 700px; margin: 40px auto; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 40px; }
+  .ty-icon { width: 70px; height: 70px; background: rgba(6,182,212,0.1); border: 2px solid var(--accent-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 28px; color: var(--accent-cyan); }
+  .ty-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-top: 30px; text-align: left; }
+  .ty-step-card { background: #090d16; border: 1px solid var(--card-border); padding: 20px; border-radius: 12px; }
+
+  /* Footer */
+  .mf-footer { border-top: 1px solid var(--card-border); padding: 50px 0 30px; margin-top: 60px; color: var(--text-muted); font-size: 13px; }
+  .mf-footer h4 { color: #fff; font-size: 14px; margin-bottom: 15px; font-weight: 700; }
+  .mf-footer ul { list-style: none; padding: 0; margin: 0; }
+  .mf-footer ul li { margin-bottom: 8px; }
+  .mf-footer ul li a { color: var(--text-muted); text-decoration: none; }
+  .mf-footer ul li a:hover { color: #fff; }
+</style>
+
+<div class="muski-funnel-wrap">
+
+  <!-- ==================== STEP 1: LANDING PAGE ==================== -->
+  <div id="step-landing" class="funnel-step active-step">
+    <div class="m-container">
+      <nav class="mf-nav">
+        <div class="mf-logo">
+          <img src="https://muski.live/wp-content/uploads/2026/09/Untitled-design-3_2.png" alt="Muski" class="mf-logo-img">
+        </div>
+        <ul class="mf-nav-links">
+          <li><a onclick="scrollToSection('features')">Features</a></li>
+          <li><a onclick="scrollToSection('showcase')">Showcase</a></li>
+          <li><a onclick="scrollToSection('reviews')">Reviews</a></li>
+          <li><a onclick="scrollToSection('faq')">FAQ</a></li>
+        </ul>
+        <button class="mf-btn" onclick="goToCheckout()">Order Now</button>
+      </nav>
+
+      <section class="mf-hero">
+        <div>
+          <span class="mf-badge">✨ Ultimate Room Transformation</span>
+          <h1>Ultimate Room & Setup Transformation</h1>
+          <p>The 10M ARGB Smart LED Neon Rope Light. Transform your space with vibrant, app-controlled lighting that matches your vibe.</p>
+          <div class="mf-rating">
+            <div><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+            <span>4.9 / 5.0 (2,300+ Reviews)</span>
+          </div>
+          <div class="mf-price-box">
+            <div class="mf-curr-price">৳1,850</div>
+            <div class="mf-orig-price">৳2,750</div>
+          </div>
+          <button class="mf-btn" onclick="goToCheckout()">Order Now - ৳1,850</button>
+        </div>
+        <div>
+          <img src="https://muski.live/wp-content/uploads/2026/09/neon-bedroom_4.jpg" alt="Neon Setup">
+        </div>
+      </section>
+
+      <div class="mf-sec-title" id="features">
+        <h2>Everything you need to transform your space</h2>
+        <p>The ultimate ARGB neon rope light combines flexibility, brilliance, and smart control.</p>
+      </div>
+
+      <div class="mf-features">
+        <div class="mf-card"><i class="fa-solid fa-mobile-screen"></i><h3>Smart App & Remote</h3><p>Control colors, brightness, and modes easily via app or IR remote.</p></div>
+        <div class="mf-card"><i class="fa-solid fa-palette"></i><h3>16M ARGB Colors</h3><p>Access millions of color combinations and dynamic lighting effects.</p></div>
+        <div class="mf-card"><i class="fa-solid fa-wand-magic-sparkles"></i><h3>Flexible 10M Length</h3><p>Durable and bendable silicon rope designed to fit any room corner.</p></div>
+        <div class="mf-card"><i class="fa-solid fa-music"></i><h3>Music Sync Mode</h3><p>Built-in mic makes lights dance and pulse with your favorite music.</p></div>
+        <div class="mf-card"><i class="fa-solid fa-clock"></i><h3>Timer & Schedule</h3><p>Set custom automation timers to turn lights on or off automatically.</p></div>
+        <div class="mf-card"><i class="fa-solid fa-shield-halved"></i><h3>IP65 Waterproof</h3><p>Safe, heat-resistant, and splash-proof build for indoor and kitchen use.</p></div>
+      </div>
+
+      <div class="mf-sec-title" id="showcase">
+        <h2>See it in action</h2>
+        <p>Discover how Muski lights elevate modern interiors.</p>
+      </div>
+
+      <div class="mf-showcase">
+        <div><img src="https://muski.live/wp-content/uploads/2026/09/neon-bedroom_4.jpg" alt="Bedroom"></div>
+        <div>
+          <h3 style="font-size: 22px; color: #fff; margin-bottom: 10px;">Bedroom Gaming Setups</h3>
+          <p style="color: var(--text-muted);">Create an immersive battle station vibe with dynamic backlighting that enhances immersion.</p>
+        </div>
+      </div>
+
+      <div class="mf-showcase">
+        <div>
+          <h3 style="font-size: 22px; color: #fff; margin-bottom: 10px;">Kitchen Architectural Lighting</h3>
+          <p style="color: var(--text-muted);">Give your kitchen cabinets and counter edges a clean, futuristic glow.</p>
+        </div>
+        <div><img src="https://muski.live/wp-content/uploads/2026/09/neon-kitchen_4.jpg" alt="Kitchen"></div>
+      </div>
+
+      <div class="mf-box-grid">
+        <div><img src="https://muski.live/wp-content/uploads/2026/09/neon-kit_4.jpg" alt="Kit"></div>
+        <div>
+          <h2 style="font-size: 24px; color: #fff; margin-bottom: 15px;">What's in the box</h2>
+          <div class="mf-box-item"><i class="fa-solid fa-check"></i> 10M ARGB LED Rope Light[cite: 1, 2, 3]</div>
+          <div class="mf-box-item"><i class="fa-solid fa-check"></i> Multi-function IR Remote Control[cite: 1, 2, 3]</div>
+          <div class="mf-box-item"><i class="fa-solid fa-check"></i> Smart Power Adapter & Controller[cite: 1, 2, 3]</div>
+          <div class="mf-box-item"><i class="fa-solid fa-check"></i> Mounting Clips and Screws Set[cite: 1, 2, 3]</div>
+        </div>
+      </div>
+
+      <div class="mf-sec-title" id="reviews">
+        <h2>Loved by 2,300+ customers</h2>
+        <p>Real feedback from our happy buyers across Bangladesh.</p>
+      </div>
+
+      <div class="mf-reviews">
+        <div class="mf-rev-card"><div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div><p>"Room er look puro change hoye geche! Gaming setup er sathe sync osadharon."</p><strong>— Tanvir Ahmed</strong></div>
+        <div class="mf-rev-card"><div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div><p>"Build quality khub e valo. Remote ar app control duita diyei smoothly chole."</p><strong>— Rakibul Hasan</strong></div>
+        <div class="mf-rev-card"><div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div><p>"Fast delivery peyechi. Kitchen cabinets-e lagaisi, dekhte ekdom premium lage."</p><strong>— Sajjad Hossain</strong></div>
+        <div class="mf-rev-card"><div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div><p>"Worth every taka! Color options ar music sync mode amar sobcheye bhalo legeche."</p><strong>— Farhan Sadique</strong></div>
+      </div>
+
+      <div class="mf-sec-title" id="faq"><h2>Questions? We've got answers.</h2></div>
+      <div class="mf-faq">
+        <div class="mf-faq-box"><span>How long does delivery take?</span><i class="fa-solid fa-chevron-down"></i></div>
+        <div class="mf-faq-box"><span>Is Cash on Delivery available?</span><i class="fa-solid fa-chevron-down"></i></div>
+        <div class="mf-faq-box"><span>Can I control lights with my phone?</span><i class="fa-solid fa-chevron-down"></i></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==================== STEP 2: CHECKOUT PAGE ==================== -->
+  <div id="step-checkout" class="funnel-step">
+    <div class="m-container" style="padding-top: 30px; padding-bottom: 50px;">
+      <nav class="mf-nav" style="margin-bottom: 30px;">
+        <div class="mf-logo">
+          <img src="https://muski.live/wp-content/uploads/2026/09/Untitled-design-3_2.png" alt="Muski" class="mf-logo-img">
+        </div>
+        <button class="mf-btn" onclick="goToCheckout()"><i class="fa-solid fa-bolt"></i> Order Now</button>
+      </nav>
+
+      <div style="margin-bottom: 20px;">
+        <a href="javascript:void(0)" onclick="goToLanding()" style="color: var(--text-muted); text-decoration: none; font-size: 14px;"><i class="fa-solid fa-arrow-left"></i> Back to Product</a>
+      </div>
+      
+      <div class="chk-grid">
+        <div class="mf-card" style="padding: 30px;">
+          <h2 style="font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 8px;">Checkout</h2>
+          <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 25px;">Fill in your details and pay when your order arrives. Cash on Delivery.</p>
+          
+          <div class="chk-form-group">
+            <label class="chk-label">Full Name *</label>
+            <input type="text" id="c-name" class="chk-input" placeholder="e.g. Md Saidul Islam Shovo" required>
+          </div>
+          <div class="chk-form-group">
+            <label class="chk-label">Phone Number *</label>
+            <input type="tel" id="c-phone" class="chk-input" placeholder="e.g. 01XXXXXXXXX" required>
+          </div>
+          <div class="chk-form-group">
+            <label class="chk-label">Delivery Address *</label>
+            <textarea id="c-address" class="chk-input" rows="3" placeholder="House, road, area, landmark..." required></textarea>
+          </div>
+          <div class="chk-form-group">
+            <label class="chk-label">Shipping Location *</label>
+            <select id="c-location" class="chk-select" onchange="calculateTotal()">
+              <option value="120">Outside Dhaka (৳120)</option>
+              <option value="60">Inside Dhaka (৳60)</option>
+            </select>
+          </div>
+
+          <div class="chk-form-group">
+            <label class="chk-label">Quantity</label>
+            <div class="chk-qty-wrap">
+              <button type="button" class="chk-qty-btn" onclick="changeQuantity(-1)">-</button>
+              <input type="text" id="c-qty" class="chk-qty-input" value="1" readonly>
+              <button type="button" class="chk-qty-btn" onclick="changeQuantity(1)">+</button>
+            </div>
+          </div>
+          
+          <div style="font-size: 15px; font-weight: 700; color: #fff; margin: 25px 0 15px;">Payment Method</div>
+          <div class="chk-pay-box">
+            <div>
+              <div style="font-weight: 700; font-size: 14px; color: #fff;">Cash on Delivery (COD)</div>
+              <div style="font-size: 12px; color: var(--text-muted);">Pay in cash when your order arrives</div>
+            </div>
+            <i class="fa-solid fa-circle-check" style="color: var(--accent-cyan); font-size: 18px;"></i>
+          </div>
+        </div>
+
+        <div>
+          <div class="mf-card" style="padding: 30px; position: sticky; top: 20px;">
+            <h3 style="font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 20px;">Order Summary</h3>
+            <div style="display: flex; gap: 15px; align-items: center; padding-bottom: 20px; border-bottom: 1px solid var(--card-border); margin-bottom: 20px;">
+              <img src="https://muski.live/wp-content/uploads/2026/09/neon-kit_4.jpg" alt="Item" style="width: 60px; height: 60px; border-radius: 10px; object-fit: cover;">
+              <div>
+                <div style="font-size: 13px; font-weight: 700; color: #fff;">10M ARGB Smart LED Neon Rope Light[cite: 1, 2, 3]</div>
+                <div style="font-size: 12px; color: var(--text-muted);">Qty: <span id="sum-qty-text">1</span></div>
+                <div style="font-size: 14px; font-weight: 800; color: var(--accent-cyan); margin-top: 4px;">৳1,850 <span style="font-size: 11px; color: var(--text-muted); text-decoration: line-through;">৳2,750</span></div>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 14px; color: var(--text-muted); margin-bottom: 12px;"><span>Subtotal (<span id="sum-items-count">1</span> item)</span><span id="sum-subtotal">৳1,850</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 14px; color: var(--text-muted); margin-bottom: 12px;"><span>Delivery Charge</span><span id="sum-delivery">৳120</span></div>
+            <div style="display: flex; justify-content: space-between; font-size: 20px; font-weight: 900; color: #fff; border-top: 1px solid var(--card-border); padding-top: 15px; margin-top: 15px; margin-bottom: 25px;">
+              <span>Total</span><span id="sum-total" style="color: var(--accent-cyan);">৳1,970</span>
+            </div>
+            <button class="mf-btn" style="width: 100%; text-align: center;" onclick="submitOrder()"><i class="fa-solid fa-check"></i> Confirm Order</button>
+            <div style="text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 15px;">
+              <i class="fa-solid fa-lock"></i> Your information is secure
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==================== STEP 3: THANK YOU PAGE ==================== -->
+  <div id="step-thankyou" class="funnel-step">
+    <div class="m-container" style="padding: 40px 20px;">
+      <nav class="mf-nav" style="margin-bottom: 30px;">
+        <div class="mf-logo">
+          <img src="https://muski.live/wp-content/uploads/2026/09/Untitled-design-3_2.png" alt="Muski" class="mf-logo-img">
+        </div>
+        <button class="mf-btn" onclick="goToLanding()"><i class="fa-solid fa-bolt"></i> Order Now</button>
+      </nav>
+
+      <div class="ty-box">
+        <div class="ty-icon"><i class="fa-solid fa-check"></i></div>
+        <h1 style="font-size: 26px; font-weight: 900; color: #fff; margin-bottom: 10px;">Order Confirmed!</h1>
+        <p id="ty-msg" style="color: var(--text-muted); font-size: 14px; margin-bottom: 25px;">Thank you! Your order has been placed successfully. We'll call you shortly to confirm.</p>
+        
+        <div style="background: #090d16; border: 1px solid var(--card-border); padding: 12px; border-radius: 10px; display: inline-block; font-size: 13px; color: var(--text-muted); margin-bottom: 30px;">
+          ORDER ID: <span id="ty-order-id" style="color: var(--accent-cyan); font-weight: bold;">65bc85bf...</span>
+        </div>
+
+        <div style="text-align: left; background: #090d16; border: 1px solid var(--card-border); border-radius: 16px; padding: 25px; margin-bottom: 30px;">
+          <h3 style="font-size: 15px; font-weight: 800; color: #fff; margin-bottom: 15px;"><i class="fa-solid fa-box" style="color: var(--accent-cyan);"></i> Order Summary</h3>
+          <div style="display: flex; justify-content: space-between; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;"><span id="ty-prod-desc">10M ARGB Smart LED Neon Rope Light (Qty: 1)</span><span id="ty-sub-amt">৳1,850</span></div>
+          <div style="display: flex; justify-content: space-between; font-size: 14px; color: var(--text-muted); margin-bottom: 8px;"><span>Delivery Charge</span><span id="ty-del-chg">৳120</span></div>
+          <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: 900; color: #fff; border-top: 1px solid var(--card-border); padding-top: 12px; margin-top: 12px;">
+            <span>Total (Pay on Delivery)</span><span id="ty-tot-amt" style="color: var(--accent-cyan);">৳1,970</span>
+          </div>
+        </div>
+
+        <h3 style="font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 15px;">What happens next?</h3>
+        <div class="ty-steps">
+          <div class="ty-step-card"><div style="font-size: 11px; color: var(--accent-cyan); font-weight: bold; margin-bottom: 5px;">STEP 1</div><div style="font-weight: 700; color: #fff; font-size: 13px; margin-bottom: 4px;">Confirmation Call</div><div style="font-size: 12px; color: var(--text-muted);">We will call you within 2-4 hours.</div></div>
+          <div class="ty-step-card"><div style="font-size: 11px; color: var(--accent-cyan); font-weight: bold; margin-bottom: 5px;">STEP 2</div><div style="font-weight: 700; color: #fff; font-size: 13px; margin-bottom: 4px;">Packing & Dispatch</div><div style="font-size: 12px; color: var(--text-muted);">Order packed and handed to courier.</div></div>
+          <div class="ty-step-card"><div style="font-size: 11px; color: var(--accent-cyan); font-weight: bold; margin-bottom: 5px;">STEP 3</div><div style="font-weight: 700; color: #fff; font-size: 13px; margin-bottom: 4px;">Delivery to Door</div><div style="font-size: 12px; color: var(--text-muted);">Pay in cash when order arrives.</div></div>
+        </div>
+
+        <div style="margin-top: 35px; display: flex; gap: 15px; justify-content: center;">
+          <button class="mf-btn" onclick="goToLanding()">Order Another</button>
+          <button class="mf-btn" style="background: transparent; border: 1px solid var(--card-border);" onclick="goToLanding()">Back to Home</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer with Contact Info -->
+  <footer class="mf-footer">
+    <div class="m-container">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; text-align: left; margin-bottom: 30px;">
+        <div>
+          <img src="https://muski.live/wp-content/uploads/2026/09/Untitled-design-3_2.png" alt="Muski" style="height: 35px; margin-bottom: 12px; object-fit: contain; background: transparent;">
+          <p style="color: var(--text-muted); font-size: 13px; line-height: 1.6;">Muski brings premium smart lighting to Bangladesh. Transform your space with millions of colors, app control, and flexible neon-grade glow.</p>
+        </div>
+        <div>
+          <h4>SHOP</h4>
+          <ul>
+            <li><a onclick="scrollToSection('features')">Product Details</a></li>
+            <li><a onclick="goToCheckout()">Place an Order</a></li>
+            <li><a onclick="scrollToSection('features')">10M ARGB Smart LED Neon Rope Light</a></li>
+            <li><a href="javascript:void(0)">৳1,850 · COD Available</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>CONTACT</h4>
+          <ul>
+            <li><i class="fa-solid fa-phone" style="color: var(--accent-cyan);"></i> 01758553708</li>
+            <li><i class="fa-solid fa-envelope" style="color: var(--accent-cyan);"></i> muskiistore@gmail.com</li>
+            <li><i class="fa-solid fa-location-dot" style="color: var(--accent-cyan);"></i> Dhaka, Bangladesh</li>
+          </ul>
+        </div>
+      </div>
+      <div style="border-top: 1px solid var(--card-border); padding-top: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; color: var(--text-muted); font-size: 12px;">
+        <div>© 2026 Muski (muski.live). All rights reserved.</div>
+        <div style="display: flex; gap: 20px;">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Warranty</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  let unitPrice = 1850;
+
+  function scrollToSection(id) {
+    let el = document.getElementById(id);
+    if(el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  function goToCheckout() {
+    document.getElementById('step-landing').classList.remove('active-step');
+    document.getElementById('step-thankyou').classList.remove('active-step');
+    document.getElementById('step-checkout').classList.add('active-step');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function goToLanding() {
+    document.getElementById('step-checkout').classList.remove('active-step');
+    document.getElementById('step-thankyou').classList.remove('active-step');
+    document.getElementById('step-landing').classList.add('active-step');
+    document.getElementById('c-qty').value = 1;
+    calculateTotal();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function changeQuantity(val) {
+    let qtyInput = document.getElementById('c-qty');
+    let currentQty = parseInt(qtyInput.value) + val;
+    if(currentQty < 1) currentQty = 1;
+    qtyInput.value = currentQty;
+    calculateTotal();
+  }
+
+  function calculateTotal() {
+    let qty = parseInt(document.getElementById('c-qty').value);
+    let delivery = parseInt(document.getElementById('c-location').value);
+    let subtotal = qty * unitPrice;
+    let total = subtotal + delivery;
+
+    document.getElementById('sum-qty-text').innerText = qty;
+    document.getElementById('sum-items-count').innerText = qty;
+    document.getElementById('sum-subtotal').innerText = '৳' + subtotal.toLocaleString();
+    document.getElementById('sum-delivery').innerText = '৳' + delivery;
+    document.getElementById('sum-total').innerText = '৳' + total.toLocaleString();
+  }
+
+  function submitOrder() {
+    let name = document.getElementById('c-name').value;
+    let phone = document.getElementById('c-phone').value;
+    let address = document.getElementById('c-address').value;
+    
+    if(!name || !phone || !address) {
+      alert('দয়া করে আপনার নাম, ফোন নাম্বার এবং ডেলিভারি এড্রেস লিখুন।');
+      return;
+    }
+
+    let qty = parseInt(document.getElementById('c-qty').value);
+    let delivery = parseInt(document.getElementById('c-location').value);
+    let subtotal = qty * unitPrice;
+    let total = subtotal + delivery;
+
+    document.getElementById('ty-msg').innerText = `Thank you, ${name}. Your order has been placed successfully. We'll call you shortly to confirm.`;
+    document.getElementById('ty-order-id').innerText = Math.random().toString(16).substring(2, 14) + '...';
+    document.getElementById('ty-prod-desc').innerText = `10M ARGB Smart LED Neon Rope Light (Qty: ${qty})`;
+    document.getElementById('ty-sub-amt').innerText = '৳' + subtotal.toLocaleString();
+    document.getElementById('ty-del-chg').innerText = '৳' + delivery;
+    document.getElementById('ty-tot-amt').innerText = '৳' + total.toLocaleString();
+
+    document.getElementById('step-checkout').classList.remove('active-step');
+    document.getElementById('step-thankyou').classList.add('active-step');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
