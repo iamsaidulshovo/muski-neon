@@ -379,6 +379,8 @@
 
 <script>
   let unitPrice = 1850;
+  // আপনার তৈরি করা Apps Script Web App URL
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz737mNLoVpzpHz3nM9Xe6-fJJERRcFopLvXJYM56b7DRQDyZQ0dOKLFMoxkOIYbUyj/exec';
 
   function scrollToSection(id) {
     let el = document.getElementById(id);
@@ -424,30 +426,78 @@
     document.getElementById('sum-total').innerText = '৳' + total.toLocaleString();
   }
 
-  function submitOrder() {
-    let name = document.getElementById('c-name').value;
-    let phone = document.getElementById('c-phone').value;
-    let address = document.getElementById('c-address').value;
+  // ফর্ম সাবমিট ও গুগল শিটে ডেটা পাঠানো
+  async function submitOrder() {
+    let name = document.getElementById('c-name').value.trim();
+    let phone = document.getElementById('c-phone').value.trim();
+    let address = document.getElementById('c-address').value.trim();
+    let locationSelect = document.getElementById('c-location');
+    let zoneText = locationSelect.options[locationSelect.selectedIndex].text;
     
     if(!name || !phone || !address) {
-      alert('দয়া করে আপনার নাম, ফোন নাম্বার এবং ডেলিভারি এড্রেস লিখুন।');
+      alert('দয়া করে আপনার নাম, ফোন নাম্বার এবং ডেলিভারি এড্রেস লিখুন।');
       return;
     }
 
     let qty = parseInt(document.getElementById('c-qty').value);
-    let delivery = parseInt(document.getElementById('c-location').value);
+    let delivery = parseInt(locationSelect.value);
     let subtotal = qty * unitPrice;
     let total = subtotal + delivery;
 
-    document.getElementById('ty-msg').innerText = `Thank you, ${name}. Your order has been placed successfully. We'll call you shortly to confirm.`;
-    document.getElementById('ty-order-id').innerText = Math.random().toString(16).substring(2, 14) + '...';
-    document.getElementById('ty-prod-desc').innerText = `10M ARGB Smart LED Neon Rope Light (Qty: ${qty})`;
-    document.getElementById('ty-sub-amt').innerText = '৳' + subtotal.toLocaleString();
-    document.getElementById('ty-del-chg').innerText = '৳' + delivery;
-    document.getElementById('ty-tot-amt').innerText = '৳' + total.toLocaleString();
+    // বাটন লোডিং স্টেট
+    const confirmBtn = document.querySelector('#step-checkout .mf-btn[onclick="submitOrder()"]');
+    const originalBtnText = confirmBtn ? confirmBtn.innerHTML : '<i class="fa-solid fa-check"></i> Confirm Order';
+    if(confirmBtn) {
+      confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+      confirmBtn.disabled = true;
+    }
 
-    document.getElementById('step-checkout').classList.remove('active-step');
-    document.getElementById('step-thankyou').classList.add('active-step');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // গুগল শিটে পাঠানোর ডেটা অবজেক্ট
+    const orderData = {
+      name: name,
+      phone: phone,
+      address: address,
+      zone: `${zoneText} (Qty: ${qty})`,
+      total: `৳${total.toLocaleString()}`
+    };
+
+    try {
+      // Apps Script Webhook-এ পোস্ট রিকোয়েস্ট
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      // Thank You পেইজের ডেটা আপডেট
+      document.getElementById('ty-msg').innerText = `Thank you, ${name}. Your order has been placed successfully. We'll call you shortly to confirm.`;
+      document.getElementById('ty-order-id').innerText = Math.random().toString(16).substring(2, 14) + '...';
+      document.getElementById('ty-prod-desc').innerText = `10M ARGB Smart LED Neon Rope Light (Qty: ${qty})`;
+      document.getElementById('ty-sub-amt').innerText = '৳' + subtotal.toLocaleString();
+      document.getElementById('ty-del-chg').innerText = '৳' + delivery;
+      document.getElementById('ty-tot-amt').innerText = '৳' + total.toLocaleString();
+
+      // ফর্ম রিসেট
+      document.getElementById('c-name').value = '';
+      document.getElementById('c-phone').value = '';
+      document.getElementById('c-address').value = '';
+
+      // Step 3 (Thank You) দেখানো
+      document.getElementById('step-checkout').classList.remove('active-step');
+      document.getElementById('step-thankyou').classList.add('active-step');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } catch (error) {
+      console.error('Order submission error:', error);
+      alert('অর্ডার সাবমিট করতে সমস্যা হয়েছে। দয়া করে কিছুক্ষণ পর আবার চেষ্টা করুন।');
+    } finally {
+      if(confirmBtn) {
+        confirmBtn.innerHTML = originalBtnText;
+        confirmBtn.disabled = false;
+      }
+    }
   }
 </script>
