@@ -403,6 +403,26 @@ src="https://www.facebook.com/tr?id=1855595045810508&ev=PageView&noscript=1"
   let unitPrice = 3350;
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbySBHBKrrXp7p3adtdWAttIUbxqJD6c1ZbIaj3pSSFw_yDNKF3umPfZk_C-GKRvuTul/exec';
 
+  // =========================================================================
+  // ১. পেজ লোড / ভিউ আইটেম (View Item Event Data Layer Push)
+  // =========================================================================
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ ecommerce: null }); // পূর্ববর্তী অবজেক্ট ক্লিয়ার
+  window.dataLayer.push({
+    event: 'view_item',
+    ecommerce: {
+      currency: 'BDT',
+      value: unitPrice,
+      items: [{
+        item_id: 'NEON-10M',
+        item_name: '10M ARGB Smart LED Neon Rope Light',
+        item_category: 'Smart Lighting',
+        price: unitPrice,
+        quantity: 1
+      }]
+    }
+  });
+
   function scrollToSection(id) {
     let el = document.getElementById(id);
     if(el) {
@@ -410,21 +430,42 @@ src="https://www.facebook.com/tr?id=1855595045810508&ev=PageView&noscript=1"
     }
   }
 
+  // =========================================================================
+  // ২. চেকআউট ফর্মে প্রবেশ (Begin Checkout / InitiateCheckout)
+  // =========================================================================
   function goToCheckout() {
     document.getElementById('step-landing').classList.remove('active-step');
     document.getElementById('step-thankyou').classList.remove('active-step');
     document.getElementById('step-checkout').classList.add('active-step');
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Meta Pixel InitiateCheckout Event
+    // Meta Pixel Fallback
     if (typeof fbq === 'function') {
       fbq('track', 'InitiateCheckout', {
         content_name: '10M ARGB Smart LED Neon Rope Light',
-        content_category: 'Lighting',
+        content_category: 'Smart Lighting',
         currency: 'BDT',
         value: unitPrice
       });
     }
+
+    // GA4 & Server GTM Data Layer Push
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ ecommerce: null });
+    window.dataLayer.push({
+      event: 'begin_checkout',
+      ecommerce: {
+        currency: 'BDT',
+        value: unitPrice,
+        items: [{
+          item_id: 'NEON-10M',
+          item_name: '10M ARGB Smart LED Neon Rope Light',
+          item_category: 'Smart Lighting',
+          price: unitPrice,
+          quantity: 1
+        }]
+      }
+    });
   }
 
   function goToLanding() {
@@ -457,6 +498,9 @@ src="https://www.facebook.com/tr?id=1855595045810508&ev=PageView&noscript=1"
     document.getElementById('sum-total').innerText = '৳' + total.toLocaleString();
   }
 
+  // =========================================================================
+  // ৩. অর্ডার সাবমিট, সার্ভার ব্যাকএন্ড ও পারচেজ ডেটা লেয়ার পুশ
+  // =========================================================================
   async function submitOrder() {
     let name = document.getElementById('c-name').value.trim();
     let phone = document.getElementById('c-phone').value.trim();
@@ -473,6 +517,7 @@ src="https://www.facebook.com/tr?id=1855595045810508&ev=PageView&noscript=1"
     let delivery = parseInt(locationSelect.value);
     let subtotal = qty * unitPrice;
     let total = subtotal + delivery;
+    let orderId = 'ORD-' + Math.random().toString(16).substring(2, 10).toUpperCase();
 
     const confirmBtn = document.querySelector('#step-checkout .mf-btn[onclick="submitOrder()"]');
     const originalBtnText = confirmBtn ? confirmBtn.innerHTML : '<i class="fa-solid fa-check"></i> Confirm Order';
@@ -490,6 +535,7 @@ src="https://www.facebook.com/tr?id=1855595045810508&ev=PageView&noscript=1"
     };
 
     try {
+      // গুগল শিট এবং টেলিগ্রাম অ্যালার্টে ডেটা পাঠানো
       await fetch(SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -499,7 +545,7 @@ src="https://www.facebook.com/tr?id=1855595045810508&ev=PageView&noscript=1"
         body: JSON.stringify(orderData)
       });
 
-      // Meta Pixel Purchase Event
+      // মেটা পিক্সেল ব্রাউজার ইভেন্ট (Fallback)
       if (typeof fbq === 'function') {
         fbq('track', 'Purchase', {
           content_name: '10M ARGB Smart LED Neon Rope Light',
@@ -511,8 +557,43 @@ src="https://www.facebook.com/tr?id=1855595045810508&ev=PageView&noscript=1"
         });
       }
 
+      // ফোন নাম্বার আন্তর্জাতিক ফরম্যাটে রূপান্তর (+8801XXXXXXXXX)
+      let rawPhone = phone.replace(/[^0-9]/g, '');
+      if (rawPhone.startsWith('01')) {
+        rawPhone = '88' + rawPhone;
+      }
+
+      // সার্ভার সাইড ট্র্যাকিং ও GA4-এর জন্য Data Layer Push
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ ecommerce: null });
+      window.dataLayer.push({
+        event: 'purchase',
+        ecommerce: {
+          transaction_id: orderId,
+          value: total,
+          currency: 'BDT',
+          shipping: delivery,
+          items: [{
+            item_id: 'NEON-10M',
+            item_name: '10M ARGB Smart LED Neon Rope Light',
+            item_category: 'Smart Lighting',
+            price: unitPrice,
+            quantity: qty
+          }]
+        },
+        user_data: {
+          phone_number: rawPhone,
+          first_name: name.trim().toLowerCase(),
+          address: {
+            city: locationSelect.value === "60" ? "dhaka" : "outside dhaka",
+            country: "bd"
+          }
+        }
+      });
+
+      // Thank You পেজের ডেটা আপডেট ও পেজ ট্রানজিশন
       document.getElementById('ty-msg').innerText = `Thank you, ${name}. Your order has been placed successfully. We'll call you shortly to confirm.`;
-      document.getElementById('ty-order-id').innerText = Math.random().toString(16).substring(2, 14) + '...';
+      document.getElementById('ty-order-id').innerText = orderId;
       document.getElementById('ty-prod-desc').innerText = `10M ARGB Smart LED Neon Rope Light (Qty: ${qty})`;
       document.getElementById('ty-sub-amt').innerText = '৳' + subtotal.toLocaleString();
       document.getElementById('ty-del-chg').innerText = '৳' + delivery;
