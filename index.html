@@ -2,6 +2,24 @@
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="apple-touch-icon" href="logo.png">
 
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1855595045810508');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1855595045810508&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   :root {
@@ -397,6 +415,16 @@
     document.getElementById('step-thankyou').classList.remove('active-step');
     document.getElementById('step-checkout').classList.add('active-step');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Meta Pixel InitiateCheckout Event
+    if (typeof fbq === 'function') {
+      fbq('track', 'InitiateCheckout', {
+        content_name: '10M ARGB Smart LED Neon Rope Light',
+        content_category: 'Lighting',
+        currency: 'BDT',
+        value: unitPrice
+      });
+    }
   }
 
   function goToLanding() {
@@ -470,6 +498,18 @@
         },
         body: JSON.stringify(orderData)
       });
+
+      // Meta Pixel Purchase Event
+      if (typeof fbq === 'function') {
+        fbq('track', 'Purchase', {
+          content_name: '10M ARGB Smart LED Neon Rope Light',
+          content_type: 'product',
+          content_ids: ['NEON-10M'],
+          currency: 'BDT',
+          value: total,
+          num_items: qty
+        });
+      }
 
       document.getElementById('ty-msg').innerText = `Thank you, ${name}. Your order has been placed successfully. We'll call you shortly to confirm.`;
       document.getElementById('ty-order-id').innerText = Math.random().toString(16).substring(2, 14) + '...';
